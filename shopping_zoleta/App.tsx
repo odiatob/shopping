@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
-import { SafeAreaView, FlatList, View, Alert, StyleSheet, Text, Image } from 'react-native';
+  import React, { createContext, useContext, useState } from 'react';
+import { SafeAreaView, FlatList, View, Alert, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -23,6 +23,7 @@ interface CartItem {
   price: number;
   quantity: number;
   imageUrl: string;
+  description: string;
 }
 
 interface CartContextType {
@@ -80,17 +81,46 @@ const CartProvider: React.FC = ({ children }) => {
 };
 
 const products = [
-  { id: '1', name: 'Hotdog Sparkling Water', price: 5, imageUrl: require('./assets/bigbite.png') },
-  { id: '2', name: 'Meatball Gum', price: 10, imageUrl: require('./assets/meatball.png') },
-  { id: '3', name: 'Sour Patch for Adults', price: 10, imageUrl: require('./assets/sourpatch.png') },
+  { 
+    id: '1', 
+    name: 'Hotdog Sparkling Water', 
+    price: 5, 
+    imageUrl: require('./assets/bigbite.png'), 
+    description: 'A refreshing sparkling water with a unique hotdog flavor!' 
+  },
+  { 
+    id: '2', 
+    name: 'Meatball Gum', 
+    price: 10, 
+    imageUrl: require('./assets/meatball.png'), 
+    description: 'Chew on these delicious meatball-flavored gums for a savory treat!' 
+  },
+  { 
+    id: '3', 
+    name: 'Sour Patch for Adults', 
+    price: 10, 
+    imageUrl: require('./assets/sourpatch.png'), 
+    description: 'A tangy twist on the classic sour patch, now with a more intense kick!' 
+  },
 ];
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { addToCart } = useCart();
+  const [showFullImage, setShowFullImage] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const handleAddToCart = (item: CartItem) => {
     addToCart(item);
     Alert.alert('Item Added', `${item.name} has been added to your cart.`);
+  };
+
+  const handleImageClick = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    setShowFullImage(true);
+  };
+
+  const closeFullImage = () => {
+    setShowFullImage(false);
   };
 
   return (
@@ -100,13 +130,18 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         renderItem={({ item }) => (
           <Card style={styles.productCard}>
             <Card.Content style={styles.productCardContent}>
-              <Image
-                source={item.imageUrl}
-                style={styles.productImage}
-                resizeMode="cover"
-              />
+              <TouchableOpacity onPress={() => handleImageClick(item.imageUrl)}>
+                <Image
+                  source={item.imageUrl}
+                  style={styles.productImage}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
               <Title style={[styles.productTitle, { color: COLORS.text }]}>{item.name}</Title>
               <Paragraph style={[styles.productPrice, { color: COLORS.text }]}>${item.price}</Paragraph>
+              <Paragraph style={[styles.productDescription, { color: COLORS.text }]}>
+                {item.description}
+              </Paragraph>
               <Button
                 mode="contained"
                 onPress={() => handleAddToCart(item)}
@@ -127,6 +162,15 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       >
         Go to Cart
       </Button>
+
+      {showFullImage && selectedImage && (
+        <View style={styles.fullImageModal}>
+          <TouchableOpacity onPress={closeFullImage} style={styles.closeButton}>
+            <Text style={{ color: '#fff', fontSize: 20 }}>Close</Text>
+          </TouchableOpacity>
+          <Image source={selectedImage} style={styles.fullImage} resizeMode="contain" />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -173,8 +217,7 @@ const CartScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 <Button
                   mode="text"
                   onPress={() => removeFromCart(item.id)}
-                  style={[styles.removeButton, { color: COLORS.accent }]}
-                >
+                  style={[styles.removeButton, { color: COLORS.accent }]}>
                   Remove
                 </Button>
               </View>
@@ -216,7 +259,7 @@ const CheckoutScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: COLORS.background }]}>
         <Text style={[styles.title, { color: COLORS.text }]}>Checkout</Text>
-        <Text style={[styles.emptyCartMessage, { color: COLORS.accent }]}>
+        <Text style={[styles.emptyCartMessage, { color: '#D32F2F' }]}>
           Your cart is empty. Add items to checkout.
         </Text>
         <Button
@@ -319,6 +362,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
+  productDescription: {
+    fontSize: 14,
+    color: COLORS.text,
+    marginBottom: 10,
+  },
   addToCartButton: {
     marginTop: 10,
     paddingVertical: 10,
@@ -355,6 +403,30 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     marginBottom: 20,
+  },
+  fullImageModal: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  fullImage: {
+    width: '90%',
+    height: '80%',
+    borderRadius: 15,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    padding: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 20,
   },
 });
 
