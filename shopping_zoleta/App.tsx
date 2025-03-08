@@ -5,24 +5,22 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useFonts } from 'expo-font';
 
-// Define color palette
 const COLORS = {
-  primary: '#4caf50', // Friendly Green
-  secondary: '#f8a5c2', // Soft Pink
-  accent: '#f1c40f', // Gentle Yellow
-  background: '#f5f5f5', // Off-white background
-  text: '#34495e', // Dark Gray for text
+  primary: '#4caf50',
+  secondary: '#f8a5c2',
+  accent: '#f1c40f',
+  background: '#f5f5f5',
+  text: '#34495e',
 };
 
-// Define font (using Expo's built-in fonts)
-const FONT_FAMILY = 'Poppins_400Regular'; // Built-in Poppins font from Expo
+const FONT_FAMILY = 'Poppins_400Regular';
 
 interface CartItem {
   id: string;
   name: string;
   price: number;
   quantity: number;
-  imageUrl: string; // Image URL for each product
+  imageUrl: string;
 }
 
 interface CartContextType {
@@ -79,7 +77,6 @@ const CartProvider: React.FC = ({ children }) => {
   );
 };
 
-// HomeScreen
 const products = [
   { id: '1', name: 'Hotdog Sparkling Water', price: 5, imageUrl: require('./assets/bigbite.png') },
   { id: '2', name: 'Meatball Gum', price: 10, imageUrl: require('./assets/meatball.png') },
@@ -101,17 +98,13 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         renderItem={({ item }) => (
           <Card style={styles.productCard}>
             <Card.Content style={styles.productCardContent}>
-              {/* Product Image */}
               <Image
-                source={item.imageUrl} // Ensure the image URL is correct here
+                source={item.imageUrl}
                 style={styles.productImage}
-                resizeMode="cover" // Make image cover the available space
+                resizeMode="cover"
               />
-              {/* Product Name */}
               <Title style={[styles.productTitle, { color: COLORS.text }]}>{item.name}</Title>
-              {/* Product Price */}
               <Paragraph style={[styles.productPrice, { color: COLORS.text }]}>${item.price}</Paragraph>
-              {/* Add to Cart Button */}
               <Button
                 mode="contained"
                 onPress={() => handleAddToCart(item)}
@@ -136,8 +129,6 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   );
 };
 
-
-// CartScreen
 const CartScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { cart, removeFromCart, updateQuantity } = useCart();
 
@@ -202,7 +193,6 @@ const CartScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   );
 };
 
-// CheckoutScreen
 const CheckoutScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { cart, clearCart } = useCart();
 
@@ -220,7 +210,6 @@ const CheckoutScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     ]);
   };
 
-  // If the cart is empty, display a message
   if (cart.length === 0) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: COLORS.background }]}>
@@ -270,7 +259,7 @@ const App: React.FC = () => {
   });
 
   if (!fontsLoaded) {
-    return null; // You can return a loading spinner here
+    return null;
   }
 
   return (
@@ -296,13 +285,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    fontFamily: FONT_FAMILY, // Use the font here
+    fontFamily: FONT_FAMILY,
   },
   productCard: {
     marginBottom: 20,
     borderRadius: 10,
     elevation: 5,
-    backgroundColor: '#fff', // Ensure a white background for product cards
+    backgroundColor: '#fff',
   },
   productCardContent: {
     padding: 10,
@@ -312,8 +301,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   productImage: {
-    width: '100%', // Fill the entire width of the card
-    height: 200, // Adjust the height to suit your design
+    width: '100%',
+    height: 200,
     borderRadius: 10,
     marginBottom: 10,
   },
