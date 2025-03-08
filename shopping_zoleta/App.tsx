@@ -1,23 +1,28 @@
 import React, { createContext, useContext, useState } from 'react';
-import { SafeAreaView, FlatList, View, Alert, StyleSheet, Text } from 'react-native';
+import { SafeAreaView, FlatList, View, Alert, StyleSheet, Text, Image } from 'react-native';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useFonts } from 'expo-font';
 
 // Define color palette
 const COLORS = {
-  primary: '#6200ea', // Purple
-  secondary: '#03dac6', // Teal
-  background: '#f8f9fa', // Light Gray
-  text: '#212121', // Dark Gray (for primary text)
-  accent: '#ff5722', // Orange (for alerts, warnings, etc.)
+  primary: '#4caf50', // Friendly Green
+  secondary: '#f8a5c2', // Soft Pink
+  accent: '#f1c40f', // Gentle Yellow
+  background: '#f5f5f5', // Off-white background
+  text: '#34495e', // Dark Gray for text
 };
+
+// Define font (using Expo's built-in fonts)
+const FONT_FAMILY = 'Poppins_400Regular'; // Built-in Poppins font from Expo
 
 interface CartItem {
   id: string;
   name: string;
   price: number;
   quantity: number;
+  imageUrl: string; // Image URL for each product
 }
 
 interface CartContextType {
@@ -76,9 +81,9 @@ const CartProvider: React.FC = ({ children }) => {
 
 // HomeScreen
 const products = [
-  { id: '1', name: 'Product 1', price: 10 },
-  { id: '2', name: 'Product 2', price: 20 },
-  { id: '3', name: 'Product 3', price: 30 },
+  { id: '1', name: 'Hotdog Sparkling Water', price: 5, imageUrl: require('./assets/bigbite.png') },
+  { id: '2', name: 'Meatball Gum', price: 10, imageUrl: require('./assets/meatball.png') },
+  { id: '3', name: 'Sour Patch', price: 10, imageUrl: require('./assets/sourpatch.png') },
 ];
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -95,9 +100,18 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         data={products}
         renderItem={({ item }) => (
           <Card style={styles.productCard}>
-            <Card.Content>
-              <Title style={{ color: COLORS.text }}>{item.name}</Title>
-              <Paragraph style={{ color: COLORS.text }}>${item.price}</Paragraph>
+            <Card.Content style={styles.productCardContent}>
+              {/* Product Image */}
+              <Image
+                source={item.imageUrl} // Ensure the image URL is correct here
+                style={styles.productImage}
+                resizeMode="cover" // Make image cover the available space
+              />
+              {/* Product Name */}
+              <Title style={[styles.productTitle, { color: COLORS.text }]}>{item.name}</Title>
+              {/* Product Price */}
+              <Paragraph style={[styles.productPrice, { color: COLORS.text }]}>${item.price}</Paragraph>
+              {/* Add to Cart Button */}
               <Button
                 mode="contained"
                 onPress={() => handleAddToCart(item)}
@@ -122,6 +136,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   );
 };
 
+
 // CartScreen
 const CartScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { cart, removeFromCart, updateQuantity } = useCart();
@@ -141,8 +156,12 @@ const CartScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         renderItem={({ item }) => (
           <Card style={styles.productCard}>
             <Card.Content>
-              <Title style={{ color: COLORS.text }}>{item.name}</Title>
-              <Paragraph style={{ color: COLORS.text }}>${item.price} x {item.quantity}</Paragraph>
+              <Image
+                source={item.imageUrl}
+                style={styles.productImage}
+              />
+              <Title style={[styles.productTitle, { color: COLORS.text }]}>{item.name}</Title>
+              <Paragraph style={[styles.productPrice, { color: COLORS.text }]}>${item.price} x {item.quantity}</Paragraph>
               <View style={styles.quantityControl}>
                 <Button
                   mode="outlined"
@@ -226,8 +245,12 @@ const CheckoutScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       {cart.map(item => (
         <Card style={styles.productCard} key={item.id}>
           <Card.Content>
-            <Title style={{ color: COLORS.text }}>{item.name}</Title>
-            <Paragraph style={{ color: COLORS.text }}>${item.price} x {item.quantity}</Paragraph>
+            <Image
+              source={item.imageUrl}
+              style={styles.productImage}
+            />
+            <Title style={[styles.productTitle, { color: COLORS.text }]}>{item.name}</Title>
+            <Paragraph style={[styles.productPrice, { color: COLORS.text }]}>${item.price} x {item.quantity}</Paragraph>
           </Card.Content>
         </Card>
       ))}
@@ -242,6 +265,14 @@ const CheckoutScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 const Stack = createStackNavigator();
 
 const App: React.FC = () => {
+  const [fontsLoaded] = useFonts({
+    Poppins_400Regular: require('@expo-google-fonts/poppins/Poppins_400Regular.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    return null; // You can return a loading spinner here
+  }
+
   return (
     <CartProvider>
       <NavigationContainer>
@@ -265,14 +296,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    fontFamily: FONT_FAMILY, // Use the font here
   },
   productCard: {
     marginBottom: 20,
     borderRadius: 10,
     elevation: 5,
+    backgroundColor: '#fff', // Ensure a white background for product cards
+  },
+  productCardContent: {
+    padding: 10,
+    justifyContent: 'space-between',
   },
   productList: {
     paddingBottom: 20,
+  },
+  productImage: {
+    width: '100%', // Fill the entire width of the card
+    height: 200, // Adjust the height to suit your design
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  productTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  productPrice: {
+    fontSize: 18,
+    marginBottom: 10,
   },
   addToCartButton: {
     marginTop: 10,
@@ -280,36 +332,6 @@ const styles = StyleSheet.create({
   cartButton: {
     marginTop: 20,
     width: '100%',
-  },
-  quantityControl: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-  },
-  removeButton: {
-    marginTop: 10,
-  },
-  checkoutButton: {
-    marginTop: 20,
-    width: '100%',
-  },
-  cartList: {
-    paddingBottom: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  total: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginVertical: 20,
-  },
-  emptyCartMessage: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginVertical: 20,
   },
 });
 
