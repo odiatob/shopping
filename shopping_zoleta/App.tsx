@@ -10,7 +10,9 @@ const COLORS = {
   secondary: '#f8a5c2',
   accent: '#f1c40f',
   background: '#f5f5f5',
-  text: '#34495e',
+  text: '#2d3436',
+  cardBackground: '#fff',
+  border: '#ddd',
 };
 
 const FONT_FAMILY = 'Poppins_400Regular';
@@ -80,7 +82,7 @@ const CartProvider: React.FC = ({ children }) => {
 const products = [
   { id: '1', name: 'Hotdog Sparkling Water', price: 5, imageUrl: require('./assets/bigbite.png') },
   { id: '2', name: 'Meatball Gum', price: 10, imageUrl: require('./assets/meatball.png') },
-  { id: '3', name: 'Sour Patch', price: 10, imageUrl: require('./assets/sourpatch.png') },
+  { id: '3', name: 'Sour Patch for Adults', price: 10, imageUrl: require('./assets/sourpatch.png') },
 ];
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -157,14 +159,14 @@ const CartScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 <Button
                   mode="outlined"
                   onPress={() => handleQuantityChange(item.id, 'decrease')}
-                  style={{ borderColor: COLORS.primary }}
+                  style={styles.quantityButton}
                 >
                   -
                 </Button>
                 <Button
                   mode="outlined"
                   onPress={() => handleQuantityChange(item.id, 'increase')}
-                  style={{ borderColor: COLORS.primary }}
+                  style={styles.quantityButton}
                 >
                   +
                 </Button>
@@ -284,17 +286,19 @@ const App: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 15,
     fontFamily: FONT_FAMILY,
   },
   productCard: {
-    marginBottom: 20,
-    borderRadius: 10,
-    elevation: 5,
-    backgroundColor: '#fff',
+    marginBottom: 15,
+    borderRadius: 15,
+    elevation: 6,
+    backgroundColor: COLORS.cardBackground,
+    borderColor: COLORS.border,
+    borderWidth: 1,
   },
   productCardContent: {
-    padding: 10,
+    padding: 15,
     justifyContent: 'space-between',
   },
   productList: {
@@ -302,25 +306,55 @@ const styles = StyleSheet.create({
   },
   productImage: {
     width: '100%',
-    height: 200,
-    borderRadius: 10,
-    marginBottom: 10,
+    height: 250,
+    borderRadius: 15,
+    marginBottom: 15,
   },
   productTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontWeight: '600',
     marginBottom: 5,
   },
   productPrice: {
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: 10,
   },
   addToCartButton: {
     marginTop: 10,
+    paddingVertical: 10,
+    borderRadius: 5,
   },
   cartButton: {
     marginTop: 20,
     width: '100%',
+    paddingVertical: 10,
+  },
+  checkoutButton: {
+    marginTop: 20,
+    width: '100%',
+    paddingVertical: 12,
+  },
+  quantityButton: {
+    marginHorizontal: 5,
+    borderColor: COLORS.primary,
+  },
+  removeButton: {
+    marginTop: 10,
+  },
+  total: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginTop: 15,
+  },
+  emptyCartMessage: {
+    fontSize: 16,
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 20,
   },
 });
 
